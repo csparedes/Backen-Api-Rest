@@ -1,21 +1,25 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define('tbl_producto', {
-        pro_id: {
+
+    const tbl_producto = sequelize.define('tbl_producto', {
+        proId: {
             type: type.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        pro_nombre: {
+        proCodigoBarras: {
             type: type.STRING
         },
-        pro_id_categoria: type.INTEGER,
-        pro_foto: {
-            type: type.STRING,
-            defaultValue: 'https://lh3.googleusercontent.com/proxy/h5uwf34I0cHnq9wBx4NU2M-Zsf5jm3tNddoe-vM-nSgblinlyWi3M8ytnpUVLd_9WUu7AeF6ZkErsjJw_06mcYBuHmYNFX3lvSLlxKkUSpxNmWlzCezvOQdW3A',
+        proNombre: {
+            type: type.STRING
         },
-        pro_estado: {
+        proFoto: {
+            type: type.STRING,
+        },
+        proEstado: {
             type: type.BOOLEAN,
             defaultValue: true
         }
     });
+
+    return tbl_producto;
 }

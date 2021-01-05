@@ -4,8 +4,11 @@ const { tbl_cliente } = require('../../db');
 
 const { body, validationResult } = require('express-validator');
 
+const { verificarToken } = require('../../middlewares/autenticacion');
 
-router.get('/', async(req, res) => {
+router.get('/', [
+    // verificarToken
+], async(req, res) => {
 
     let clientes = await tbl_cliente.findAll();
     res.json({
@@ -15,16 +18,18 @@ router.get('/', async(req, res) => {
     });
 });
 
-router.get('/:cli_id', async(req, res) => {
+router.get('/:cliId', [
+    // verificarToken
+], async(req, res) => {
     let cliente = await tbl_cliente.findOne({
         where: {
-            cli_id: req.params.cli_id
+            cliId: req.params.cliId
         }
     });
 
     res.json({
         ok: true,
-        message: `Se ha obtenido el cliente con id: ${req.params.cli_id}`,
+        message: `Se ha obtenido el cliente con id: ${req.params.cliId}`,
         cliente
     });
 
@@ -32,18 +37,19 @@ router.get('/:cli_id', async(req, res) => {
 
 router.post('/', [
     //Validaciones middleware
-    body('cli_identificacion').isLength({ min: 10 }).custom(value => {
-        return tbl_cliente.findOne({
-            where: {
-                cli_identificacion: value
-            }
-        }).then(user => {
-            if (user) {
-                return Promise.reject('Identificación Existente');
-            }
-        });
-    }),
-    body('cli_fecha_nacimiento').isDate()
+    // verificarToken,
+    // body('cliIdentificacion').isLength({ min: 10 }).custom(value => {
+    //     return tbl_cliente.findOne({
+    //         where: {
+    //             cliIdentificacion: value
+    //         }
+    //     }).then(user => {
+    //         if (user) {
+    //             return Promise.reject('Identificación Existente');
+    //         }
+    //     });
+    // }),
+    // body('cliFechaNacimiento').isDate()
 ], async(req, res) => {
 
     const errors = validationResult(req);
@@ -66,40 +72,53 @@ router.post('/', [
 
 });
 
-router.put('/:cli_id', [
+router.put('/:cliId', [
     //Validaciones middleware
-    body('cli_identificacion').isLength({ min: 10 }).custom(value => {
-        return tbl_cliente.findOne({
-            where: {
-                cli_identificacion: value
-            }
-        }).then(user => {
-            if (user) {
-                return Promise.reject('Identificación Existente');
-            }
-        });
-    }),
-    body('cli_fecha_nacimiento').isDate()
+    // verificarToken,
+    // body('cliIdentificacion').isLength({ min: 10 }).custom(value => {
+    //     return tbl_cliente.findOne({
+    //         where: {
+    //             cliIdentificacion: value
+    //         }
+    //     }).then(user => {
+    //         if (user) {
+    //             return Promise.reject('Identificación Existente');
+    //         }
+    //     });
+    // }),
+    // body('cliFechaNacimiento').isDate()
 ], async(req, res) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            ok: false,
+            errors: errors.array()
+        });
+    }
+
+
     let datos = req.body;
 
     let cliente = await tbl_cliente.update(datos, {
         where: {
-            cli_id: req.params.cli_id
+            cliId: req.params.cliId
         }
     });
 
     res.json({
         ok: true,
-        message: `Se ha actualizado el cliente con id: ${req.params.cli_id}`,
+        message: `Se ha actualizado el cliente con id: ${req.params.cliId}`,
         cliente
     });
 });
 
-router.delete('/:cli:id', async(req, res) => {
+router.delete('/:cliId', [
+    // verificarToken
+], async(req, res) => {
     await tbl_cliente.destroy({
         where: {
-            cli_id: req.params.cli_id
+            cliId: req.params.cliId
         }
     });
 

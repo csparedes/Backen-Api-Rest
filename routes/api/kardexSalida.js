@@ -1,51 +1,106 @@
 const router = require('express').Router();
 
-const { tbl_kardex_salida } = require('../../db');
+const { tbl_kardex_salida, tbl_producto } = require('../../db');
 
-router.get('/', async(req, res) => {
-    let kardex = await tbl_kardex_salida.findAll();
+const { verificarToken } = require('../../middlewares/autenticacion');
 
-    res.json({
-        ok: true,
-        message: 'Se han cargado las salidas de los productos',
-        kardex
-    });
+router.get('/', [
+    // verificarToken
+], async(req, res) => {
+    await tbl_kardex_salida.findAll({
+            include: {
+                model: tbl_producto
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se han cargado las salidas de los productos',
+                kardex: value
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            });
+        });
 });
 
-router.post('/', async(req, res) => {
+router.post('/', [
+    // verificarToken
+], async(req, res) => {
     let kardex = req.body;
 
-    let consulta = await tbl_kardex_salida.create(kardex);
+    await tbl_kardex_salida.create(kardex)
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se ha creado una nueva salida de producto',
+                kardex: value
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            });
+        });
 
-    res.json({
-        ok: true,
-        message: 'Se ha creado una nueva salida de producto',
-        kardex
-    });
+
 });
 
-router.put('/:ks:id', async(req, res) => {
+router.put('/:ksId', [
+    // verificarToken
+], async(req, res) => {
     let kardex = req.body;
 
-    let consulta = await tbl_kardex_salida.update(kardex, {
-        where: {
-            ks_id: req.params.ks_id
-        }
-    });
+    await tbl_kardex_salida.update(kardex, {
+            where: {
+                ksId: req.params.ksId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se ha creado una actualizado la salida de producto',
+                kardex: value
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            });
+        });
 
-    res.json({
-        ok: true,
-        message: `Se ha actualizado la salida del producto: ${req.params.ks_id}`,
-        kardex
-    });
 });
 
-router.delete('/:ks_id', async(req, res) => {
+router.delete('/:ksId', [
+    // verificarToken
+], async(req, res) => {
     await tbl_kardex_salida.destroy({
-        where: {
-            ks_id: req.params.ks_id
-        }
-    });
+            where: {
+                ksId: req.params.ksId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se ha eliminado la salida de producto'
+
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            });
+        });
 });
 
 

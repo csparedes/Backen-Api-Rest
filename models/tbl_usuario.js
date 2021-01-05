@@ -1,38 +1,33 @@
 module.exports = (sequelize, type) => {
     return sequelize.define('tbl_usuario', {
-        usu_id: {
+        usuId: {
             type: type.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        usu_nombre: {
+        usuNombre: {
             type: type.STRING,
             required: [true, 'El nombre es necesario']
         },
-        usu_rol: {
+        usuRol: {
             type: type.STRING,
             required: [true, 'El Rol es necesario']
         },
-        usu_email: {
+        usuEmail: {
             type: type.STRING,
             required: [true, 'El correo es necesario']
         },
-        usu_google: {
+        usuGoogle: {
             type: type.BOOLEAN,
             defaultValue: false
         },
-        usu_password: {
+        usuPassword: {
             type: type.STRING,
             allowNull: false
         },
-        usu_estado: {
+        usuEstado: {
             type: type.BOOLEAN,
             defaultValue: true
         }
-    }, {
-        indexes: [{
-            unique: true,
-            fields: ['usu_email', 'usu_id']
-        }]
     });
 }

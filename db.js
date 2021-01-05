@@ -29,6 +29,51 @@ const tbl_kardex_existencia = tbl_kardex_existenciaModel(sequelize, Sequelize);
 const tbl_kardex_ingreso = tbl_kardex_ingresoModel(sequelize, Sequelize);
 const tbl_kardex_salida = tbl_kardex_salidaModel(sequelize, Sequelize);
 
+//Asociaciones==========================
+//Total: 7
+//1: Producto-categoria
+tbl_producto.belongsTo(tbl_categoria, {
+    onDelete: "cascade"
+});
+
+tbl_categoria.hasOne(tbl_producto, {
+
+});
+
+//2: KardexExistencia-Producto
+tbl_kardex_existencia.belongsTo(tbl_producto, {
+    onDelete: "cascade"
+});
+tbl_producto.hasOne(tbl_kardex_existencia);
+//3: KardexIngreso-Producto
+tbl_kardex_ingreso.belongsTo(tbl_producto, {
+    onDelete: "cascade"
+});
+tbl_producto.hasOne(tbl_kardex_ingreso);
+//4: KardexSalida-Producto
+tbl_kardex_salida.belongsTo(tbl_producto, {
+    onDelete: "cascade"
+});
+tbl_producto.hasOne(tbl_kardex_salida);
+//5: FacturaDetalle-Producto
+tbl_factura_detalle.belongsTo(tbl_producto, {
+    onDelete: "cascade"
+});
+tbl_producto.hasOne(tbl_factura_detalle);
+//6: FacturaDetalle-EncabezadoFactura
+tbl_factura_detalle.belongsTo(tbl_encabezado_factura, {
+    onDelete: "cascade"
+});
+tbl_encabezado_factura.hasOne(tbl_factura_detalle);
+//7: EncabezadoFactura-Cliente
+tbl_encabezado_factura.belongsTo(tbl_cliente, {
+    onDelete: "cascade"
+});
+tbl_cliente.hasOne(tbl_encabezado_factura);
+
+
+
+
 sequelize.sync({ force: false })
     .then(() => {
         console.log('tablas sincronizadas');

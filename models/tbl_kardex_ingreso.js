@@ -1,15 +1,15 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define('tbl_karcex_ingreso', {
-        ki_id: {
+    return sequelize.define('tbl_kardex_ingreso', {
+        kiId: {
             type: type.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        ki_pro_id: type.INTEGER,
-        ki_fecha_ingreso: type.DATE,
-        ki_cantidad: type.INTEGER,
-        ki_valor_unitario: type.DOUBLE,
-        ki_estado: {
+        kiFechaIngreso: type.STRING,
+        kiCantidad: type.INTEGER,
+        kiValorUnitario: type.DOUBLE(4, 2),
+        kiValorTotal: type.DOUBLE(4, 2),
+        kiEstado: {
             type: type.BOOLEAN,
             defaultValue: true
         }

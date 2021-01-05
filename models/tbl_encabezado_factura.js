@@ -1,27 +1,28 @@
 module.exports = (sequelize, type) => {
     return sequelize.define('tbl_encabezado_factura', {
-        ef_id: {
+        efId: {
             type: type.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        ef_numero: type.STRING,
-        ef_cli_id: type.INTEGER,
-        ef_fecha: type.DATE,
-        ef_total: {
+        efFecha: type.STRING,
+        efTotal: {
             type: type.DOUBLE(4, 2),
             defaultValue: 0.00
         },
-        ef_observacion: type.STRING(500),
-        ef_iva_porcentaje: {
+        efObservacion: {
+            type: type.STRING(500),
+            defaultValue: "Ninguna"
+        },
+        efIvaPorcentaje: {
             type: type.DOUBLE(0, 4),
             defaultValue: 0.12
         },
-        ef_iva_valor: {
+        efIvaValor: {
             type: type.DOUBLE(4, 2),
             defaultValue: 0.00
         },
-        ef_estado: {
+        efEstado: {
             type: type.BOOLEAN,
             defaultValue: true
         }

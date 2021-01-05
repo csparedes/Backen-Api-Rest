@@ -1,24 +1,22 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define('tbl_categoria', {
-        cat_id: {
+    const tbl_categoria = sequelize.define('tbl_categoria', {
+        catId: {
             type: type.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        cat_nombre: {
+        catNombre: {
             type: type.STRING,
         },
-        cat_descripcion: {
+        catDescripcion: {
             type: type.STRING
         },
-        cat_estado: {
+        catEstado: {
             type: type.BOOLEAN,
             defaultValue: true
         }
-    }, {
-        indexes: [{
-            unique: true,
-            fields: ['cat_nombre']
-        }]
     });
+
+
+    return tbl_categoria;
 }

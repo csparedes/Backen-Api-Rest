@@ -1,17 +1,14 @@
 module.exports = (sequelize, type) => {
     return sequelize.define('tbl_factura_detalle', {
-        fd_id: {
+        fdId: {
             type: type.INTEGER,
             primaryKey: true,
-            autpIncrement: true
+            autoIncrement: true
         },
-        fd_encabezado_factura: {
-            type: type.STRING
-        },
-        fd_cantidad: type.INTEGER,
-        fd_pro_id: type.INTEGER,
-        fd_valor_unitario: type.DOUBLE,
-        fd_estado: {
+        fdCantidad: type.INTEGER,
+        fdValorUnitario: type.DOUBLE(4, 2),
+        fdValorTotal: type.DOUBLE(4, 2),
+        fdEstado: {
             type: type.BOOLEAN,
             defaultValue: true
         }

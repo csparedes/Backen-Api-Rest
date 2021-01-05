@@ -1,47 +1,109 @@
 const router = require('express').Router();
 
-const { tbl_producto, tbl_categoria } = require('../../db');
+const { tbl_producto, tbl_categoria, tbl_kardex_existencia } = require('../../db');
 
 const { body, validationResult } = require('express-validator');
 
-router.get('/', async(req, res) => {
-    let productos = await tbl_producto.findAll();
-    res.json({
-        ok: true,
-        message: 'Se han cargado los productos',
-        productos
-    })
+const { verificarToken } = require('../../middlewares/autenticacion');
+
+const { Op } = require('sequelize');
+
+router.get('/', [
+    // verificarToken
+], async(req, res) => {
+    await tbl_producto.findAll({
+            include: {
+                model: tbl_categoria,
+
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se han cargado los productos',
+                productos: value
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            });
+        });
+
 });
 
-router.get('/:pro_id', async(req, res) => {
-    let prod = await tbl
-    _producto.findOne({
-        where: {
-            pro_id: req.params.pro_id
-        }
-    });
+router.get('/:proId', [
+    // verificarToken
+], async(req, res) => {
+    await tbl_producto.findOne({
+            include: {
+                model: tbl_categoria,
 
-    res.json({
-        ok: true,
-        producto: prod
-    });
+            },
+            where: {
+                proId: req.params.proId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se ha cargado el producto correctamente',
+                producto: value
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            });
+        });
+
+});
+//buscar segun query
+router.get('/find/:query', [verificarToken], async(req, res) => {
+    await tbl_producto.findAll({
+            where: {
+                proNombre: {
+                    [Op.like]: `%${req.params.query}%`
+                }
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se ha cargado el producto correctamente',
+                productos: value
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            });
+        });
+
 });
 
 router.post('/', [
         //validaciones middleware
-        body('pro_id_categoria').custom(cat_id => {
-            return tbl_categoria.findOne({
-                    where: {
-                        cat_id: cat_id
-                    }
-                })
-                .then(categoria => {
-                    if (categoria) {
-                        return Promise.reject('La categoría no existe');
-                    }
-                });
-        }),
-        body('pro_foto').isURL()
+        // verificarToken,
+        // body('proIdCategoria').custom(catId => {
+        //     return tbl_categoria.findOne({
+        //             where: {
+        //                 catId: catId
+        //             }
+        //         })
+        //         .then(categoria => {
+        //             if (categoria) {
+        //                 return Promise.reject('La categoría no existe');
+        //             }
+        //         });
+        // }),
+        // body('proFoto').isURL()
 
     ],
     async(req, res) => {
@@ -66,44 +128,77 @@ router.post('/', [
             });
     });
 
-router.put('/:pro_id', [
+router.put('/:proId', [
     //validaciones middleware
-    body('pro_id_categoria').custom(cat_id => {
-        return tbl_categoria.findOne({
-                where: {
-                    cat_id: cat_id
-                }
-            })
-            .then(categoria => {
-                if (categoria) {
-                    return Promise.reject('La categoría no existe');
-                }
-            });
-    }),
-    body('pro_foto').isURL()
+    verificarToken,
+    // body('proIdCategoria').custom(catId => {
+    //     return tbl_categoria.findOne({
+    //             where: {
+    //                 catId: catId
+    //             }
+    //         })
+    //         .then(categoria => {
+    //             if (categoria) {
+    //                 return Promise.reject('La categoría no existe');
+    //             }
+    //         });
+    // }),
+    // body('proFoto').isURL()
 
 ], async(req, res) => {
+
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //     return res.status(400).json({
+    //         ok: false,
+    //         errors: errors.array()
+    //     })
+    // }
+
+
     let body = req.body;
 
-    let consulta = await tbl_producto.update(body, {
-        where: {
-            pro_id: req.params.pro_id
-        }
-    });
-
-    res.json({
-        ok: true,
-        message: `Se ha actualizado el producto ${req.params.pro_id}`,
-        producto: body
-    });
+    await tbl_producto.update(body, {
+            where: {
+                proId: req.params.proId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: `Se ha actualizado el producto ${req.params.proId}`,
+                producto: value
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            });
+        });
 });
 
-router.delete('/:pro_id', async(req, res) => {
+router.delete('/:proId', [verificarToken], async(req, res) => {
     await tbl_producto.destroy({
-        where: {
-            pro_id: req.params.pro_id
-        }
-    });
+            where: {
+                proId: req.params.proId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se ha eliminado el producto',
+                producto: value
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error',
+                error
+            })
+        })
 });
 
 module.exports = router;

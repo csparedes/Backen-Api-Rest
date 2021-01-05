@@ -1,52 +1,135 @@
 const router = require('express').Router();
 
-const { tbl_factura_detalle } = require('../../db');
+const { tbl_factura_detalle, tbl_producto } = require('../../db');
 
-router.get('/', async(req, res) => {
-    let detalles = await tbl_factura_detalle.findAll();
+const { verificarToken } = require('../../middlewares/autenticacion');
 
-    res.json({
-        ok: true,
-        message: 'Consulta de factura detalle',
-        detalles
-    })
+router.get('/', [
+    // verificarToken
+], async(req, res) => {
+    await tbl_factura_detalle.findAll({
+            include: {
+                model: tbl_producto
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Consulta de factura detalle',
+                value
+            })
+        })
+        .cacth(err => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha sucedido un error',
+                err
+            });
+        });
 });
 
-router.post('/', async(req, res) => {
+router.get('/:tblEncabezadoFacturaEfId', [
+    // verificarToken
+], async(req, res) => {
+    await tbl_factura_detalle.findAll({
+            include: {
+                model: tbl_producto
+            },
+            where: {
+                tblEncabezadoFacturaEfId: req.params.tblEncabezadoFacturaEfId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Consulta de factura detalle',
+                value
+            })
+        })
+        .cacth(err => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha sucedido un error',
+                err
+            });
+        });
+});
+
+router.post('/', [
+    // verificarToken
+], async(req, res) => {
     let body = req.body;
 
-    let consulta = await tbl_factura_detalle.create(body);
+    await tbl_factura_detalle.create(body)
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se ha creado un nuevo detalle de factura',
+                fd: value
+            });
+        })
+        .cacth(err => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha sucedido un error',
+                err
+            });
+        });
 
-    res.json({
-        ok: true,
-        message: 'Se ha creado un nuevo detalle de factura',
-        fd: consulta
-    });
+
 
 });
 
-router.put('/:fd_id', async(req, res) => {
+router.put('/:fdId', [
+    // verificarToken
+], async(req, res) => {
     let body = req.body;
 
-    let consulta = await tbl_factura_detalle.update(body, {
-        where: {
-            fd_id: req.params.fd_id
-        }
-    });
+    await tbl_factura_detalle.update(body, {
+            where: {
+                fdId: req.params.fdId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: `Se ha actualizado el detalle: ${req.params.fdId}`,
+                fd: value
+            });
+        })
+        .cacth(err => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha sucedido un error',
+                err
+            });
+        });
 
-    res.json({
-        ok: true,
-        message: `Se ha actualizado el producto: ${req.params.fd_id}`,
-        fd: consulta
-    });
+
 });
 
-router.delete('/:fd_id', async(req, res) => {
+router.delete('/:fdId', [
+    // verificarToken
+], async(req, res) => {
     await tbl_factura_detalle.destroy({
-        where: {
-            fd_id: req.params.fd_id
-        }
-    });
+            where: {
+                fdId: req.params.fdId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: `Se ha eliminado el detalle: ${req.params.fdId}`,
+                fd: value
+            });
+        })
+        .cacth(err => {
+            res.status(500).json({
+                ok: false,
+                message: 'Ha sucedido un error',
+                err
+            });
+        });
 });
 
 module.exports = router;

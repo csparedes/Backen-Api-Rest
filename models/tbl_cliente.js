@@ -1,21 +1,21 @@
 module.exports = (sequelize, type) => {
     return sequelize.define('tbl_cliente', {
-        cli_id: {
+        cliId: {
             type: type.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        cli_nombres: {
+        cliNombres: {
             type: type.STRING
         },
-        cli_apellidos: type.STRING,
-        cli_identificacion: {
+        cliApellidos: type.STRING,
+        cliIdentificacion: {
             type: type.STRING(13)
         },
-        cli_fecha_nacimiento: type.DATE,
-        cli_domicilio: type.STRING,
-        cli_correo: type.STRING,
-        cli_estado: {
+        cliFechaNacimiento: type.STRING,
+        cliDomicilio: type.STRING,
+        cliCorreo: type.STRING,
+        cliEstado: {
             type: type.BOOLEAN,
             defaultValue: true
         }

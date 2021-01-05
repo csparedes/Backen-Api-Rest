@@ -4,7 +4,12 @@ const { tbl_categoria } = require('../../db');
 
 const { body, validationResult } = require('express-validator');
 
-router.get('/', async(req, res) => {
+const { verificarToken } = require('../../middlewares/autenticacion');
+
+
+router.get('/', [
+    // verificarToken
+], async(req, res) => {
     let categorias = await tbl_categoria.findAll();
     res.json({
         ok: true,
@@ -15,32 +20,34 @@ router.get('/', async(req, res) => {
 
 router.post('/', [
     //validaciones middleware
-    body('cat_nombre').custom(valor => {
-        return tbl_categoria.findOne({
-                where: {
-                    cat_nombre: valor
-                }
-            })
-            .then(categoria => {
-                if (categoria) {
-                    return Promise.reject('La categoría ya existe');
-                }
-            });
-    })
+    // verificarToken,
+    // body('catNombre').custom(valor => {
+    //     return tbl_categoria.findOne({
+    //             where: {
+    //                 catNombre: valor
+    //             }
+    //         })
+    //         .then(categoria => {
+    //             if (categoria) {
+    //                 return Promise.reject('La categoría ya existe');
+    //             }
+    //         });
+
+    // })
 ], async(req, res) => {
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        res.json({
-            ok: false,
-            errors: errors.array()
-        });
-    }
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //     res.json({
+    //         ok: false,
+    //         errors: errors.array()
+    //     });
+    // }
 
 
     let datos = req.body;
     await tbl_categoria.create(datos)
-    then(value => {
+        .then(value => {
             res.json({
                 ok: true,
                 message: 'Se ha creado una nueva categoría',
@@ -50,30 +57,57 @@ router.post('/', [
         .catch(err => {
             res.json({
                 ok: false,
-                message: 'Ha ocurrido un Error'
+                message: 'Ha ocurrido un Error',
+                err
             });
         });
 
 });
 
-router.put('/:cat_id', async(req, res) => {
+router.put('/:catId', [
+    //verificarToken,
+    body('catNombre').custom(valor => {
+        return tbl_categoria.findOne({
+                where: {
+                    catNombre: valor
+                }
+            })
+            .then(categoria => {
+                if (categoria) {
+                    return Promise.reject('La categoría ya existe');
+                }
+            });
+    })
+], async(req, res) => {
     let body = req.body;
     await tbl_categoria.update(body, {
-        where: {
-            cat_id: req.params.cat_id
-        }
-    });
+            where: {
+                catId: req.params.catId
+            }
+        })
+        .then(value => {
+            res.json({
+                ok: true,
+                message: 'Se ha actualizado la categoria',
+                categoria: value
+            });
 
-    res.json({
-        ok: true,
-        message: 'Se ha actualizado la categoria'
-    });
+        })
+        .catch(err => {
+            res.status(500).json({
+                ok: false,
+                message: "Ha ocurrido un error imposible",
+                err
+            })
+        });
 });
 
-router.delete('/:cat_id', async(req, res) => {
+router.delete('/:catId', [
+    // verificarToken
+], async(req, res) => {
     await tbl_categoria.destroy({
         where: {
-            cat_id: req.params.cat_id
+            catId: req.params.catId
         }
     })
 });
